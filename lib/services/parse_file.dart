@@ -8,10 +8,9 @@ enum ParseState {
 }
 
 class ParseFile {
-  final String filePath;
   ParseState state = ParseState.idle;
 
-  ParseFile(this.filePath);
+  ParseFile();
 
   String stripEnvelope(String line) {
     final idx = line.indexOf(']:');

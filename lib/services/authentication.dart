@@ -1,7 +1,6 @@
 // import the io version
 import 'package:openid_client/openid_client_io.dart';
 // use url launcher package 
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 
 Future<UserInfo>authenticate(Uri uri, String clientId, List<String> scopes) async {   
@@ -15,7 +14,7 @@ Future<UserInfo>authenticate(Uri uri, String clientId, List<String> scopes) asyn
   }
     
     // create an authenticator
-    var authenticator = new Authenticator(client,
+    var authenticator = Authenticator(client,
         scopes: scopes, urlLancher: urlLauncher);
     
     // starts the authentication
