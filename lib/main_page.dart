@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:apocrypha_uploader/services/authentication.dart';
 import 'package:apocrypha_uploader/models/book.dart';
 import 'package:apocrypha_uploader/services/parse_file.dart';
+import 'package:apocrypha_uploader/button.dart';
+import 'package:apocrypha_uploader/services/apocrypha_api.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -16,13 +18,15 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   List<BookDiscovery>? bookDiscoveries;
-    late TextEditingController _filePathController;
+  late final TextEditingController _filePathController;
+  late final ApocryphaApi _apocryphaApi;
 
   @override
   void initState() {
     super.initState();
     bookDiscoveries = [];
     _filePathController = TextEditingController();
+    _apocryphaApi = ApocryphaApi();
   }
 
   @override
@@ -31,14 +35,6 @@ class _MainPageState extends State<MainPage> {
     super.dispose();
   }
 
-    Future<void> login() async {
-    var userInfo = await authenticate(Uri.parse('https://dev-gmkle75qnno7401s.eu.auth0.com'),
-                                      'tHyaL1mE7VbWQlipvkH6ShstRHVcSiGx',
-                                      ['openid', 'profile', 'email']);
-    print(userInfo);
-  }
-
-
   void fileRead(String filePath) async {
     final bookDiscoveriesList = await ParseFile().parse(File(filePath));
 
@@ -46,6 +42,22 @@ class _MainPageState extends State<MainPage> {
         bookDiscoveries = bookDiscoveriesList;
       });
   }
+
+  void removeDiscovery(int index) {
+    setState(() {
+      bookDiscoveries!.removeAt(index);
+    });
+  }
+
+  Future<void> login() async {
+    var userInfo = await authenticate(Uri.parse('https://dev-gmkle75qnno7401s.eu.auth0.com'),
+                                      'tHyaL1mE7VbWQlipvkH6ShstRHVcSiGx',
+                                      ['openid', 'profile', 'email']);
+    print(userInfo);
+  }
+
+
+
   void pickFile() async {
     // ** DEVELOPMENT CODE ONLY - NOT FIT FOR PRODUCTION **
     // If not on Windows, skip file picking and use a hardcoded path for development purposes
@@ -100,6 +112,8 @@ class _MainPageState extends State<MainPage> {
                 return ListTile(
                   title: Text('${discovery.bookId} '),
                   subtitle: Text('In Game Date: ${discovery.inGameDate}, OS: ${discovery.osTimestamp}'),
+                  leading: Button(icon: Icons.upload, onPressed: () => _apocryphaApi.uploadDiscovery(discovery.bookId)),
+                  trailing: Button(icon: Icons.close, onPressed: () => removeDiscovery(index)),
                 );
 
               },
