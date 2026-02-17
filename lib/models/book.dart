@@ -1,4 +1,4 @@
-class BookDiscovery {
+class Book {
   final String bookId;
   final String inGameDate;
   final int? osTimestamp;
@@ -8,7 +8,7 @@ class BookDiscovery {
   final String region;
   final bool? isExterior;
 
-  BookDiscovery({
+  Book({
     required this.bookId,
     required this.inGameDate,
     required this.osTimestamp,
@@ -18,7 +18,7 @@ class BookDiscovery {
     required this.region,
     required this.isExterior,
   });
-  BookDiscovery copyWith({
+  Book copyWith({
   String? bookId,
   String? inGameDate,
   int? osTimestamp,
@@ -27,17 +27,41 @@ class BookDiscovery {
   String? locationName,
   String? region,
   bool? isExterior,
-}) {
-  return BookDiscovery(
-    bookId: bookId ?? this.bookId,
-    inGameDate: inGameDate ?? this.inGameDate,
-    osTimestamp: osTimestamp ?? this.osTimestamp,
-    entryId: entryId ?? this.entryId,
-    lastInteracted: lastInteracted ?? this.lastInteracted,
-    locationName: locationName ?? this.locationName,
-    region: region ?? this.region,
-    isExterior: isExterior ?? this.isExterior,
-  );
-}
+  }) {
+    return Book(
+      bookId: bookId ?? this.bookId,
+      inGameDate: inGameDate ?? this.inGameDate,
+      osTimestamp: osTimestamp ?? this.osTimestamp,
+      entryId: entryId ?? this.entryId,
+      lastInteracted: lastInteracted ?? this.lastInteracted,
+      locationName: locationName ?? this.locationName,
+      region: region ?? this.region,
+      isExterior: isExterior ?? this.isExterior,
+    );
+  }
 
+  factory Book.fromJson(Map<String, dynamic> json) {
+    return switch(json) {
+      {
+        'bookId': String bookId,
+        'inGameDate': String inGameDate,
+        'osTimestamp': int? osTimestamp,
+        'entryId': String entryId,
+        'lastInteracted': double lastInteracted,
+        'locationName': String locationName,
+        'region': String region,
+        'isExterior': bool? isExterior,
+      } => Book(
+          bookId: bookId,
+          inGameDate: inGameDate,
+          osTimestamp: osTimestamp,
+          entryId: entryId,
+          lastInteracted: lastInteracted,
+          locationName: locationName,
+          region: region,
+          isExterior: isExterior,
+        ),
+      _ => throw FormatException('Invalid JSON format for BookDiscovery'),
+    };
+  }
 }

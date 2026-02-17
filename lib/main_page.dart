@@ -8,6 +8,7 @@ import 'package:apocrypha_uploader/models/book.dart';
 import 'package:apocrypha_uploader/services/parse_file.dart';
 import 'package:apocrypha_uploader/button.dart';
 import 'package:apocrypha_uploader/services/apocrypha_api.dart';
+import 'package:openid_client/openid_client_io.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -17,9 +18,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List<BookDiscovery>? bookDiscoveries;
+  List<Book>? bookDiscoveries;
   late final TextEditingController _filePathController;
   late final ApocryphaApi _apocryphaApi;
+  late TokenResponse _accessToken; // Store the access token after login
 
   @override
   void initState() {
@@ -50,12 +52,13 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> login() async {
-    var userInfo = await authenticate(Uri.parse('https://dev-gmkle75qnno7401s.eu.auth0.com'),
-                                      'tHyaL1mE7VbWQlipvkH6ShstRHVcSiGx',
-                                      ['openid', 'profile', 'email']);
-    print(userInfo);
+    final credential = await authenticate(Uri.parse('https://dev-gmkle75qnno7401s.eu.auth0.com'),
+                                    'tHyaL1mE7VbWQlipvkH6ShstRHVcSiGx',
+                                    ['openid', 'profile', 'email']);
+    _accessToken = await credential.getTokenResponse();
+    print('Login successful');
   }
-
+    
 
 
   void pickFile() async {
@@ -112,7 +115,9 @@ class _MainPageState extends State<MainPage> {
                 return ListTile(
                   title: Text('${discovery.bookId} '),
                   subtitle: Text('In Game Date: ${discovery.inGameDate}, OS: ${discovery.osTimestamp}'),
-                  leading: Button(icon: Icons.upload, onPressed: () => _apocryphaApi.uploadDiscovery(discovery.bookId)),
+                  leading: Button(icon: Icons.upload, onPressed: () => _apocryphaApi.uploadDiscovery(
+                    _accessToken.accessToken!,
+                    discovery.bookId, discovery.inGameDate, discovery.osTimestamp)),
                   trailing: Button(icon: Icons.close, onPressed: () => removeDiscovery(index)),
                 );
 

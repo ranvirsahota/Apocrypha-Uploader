@@ -18,10 +18,10 @@ class ParseFile {
     return line.substring(idx + 2).trim();
   }
 
-  Future<List<BookDiscovery>> parse(File file) async {
-  final discoveries = <BookDiscovery>[];
+  Future<List<Book>> parse(File file) async {
+  final discoveries = <Book>[];
 
-  BookDiscovery? current;
+  Book? current;
   ParseState state = ParseState.idle;
 
   await for (final line in file
@@ -53,7 +53,7 @@ class ParseFile {
       if (current != null) {
         discoveries.add(current); // previous book
       }
-      current = BookDiscovery(
+      current = Book(
         bookId: msg.split('\t').last,
         inGameDate: '',
         osTimestamp: null,
